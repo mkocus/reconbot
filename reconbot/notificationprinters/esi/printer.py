@@ -13,10 +13,12 @@ class Printer(object):
     def transform(self, notification):
         text = self.get_notification_text(notification)
         timestamp = self.timestamp_to_date(notification['timestamp'])
-        ping = ':scream:'
-        
+        ping = ':gasp:'
+
         if notification['type'] == 'StructureUnderAttack':
-            ping += ' @everyone'
+            ping = ':scream: @everyone'
+        elif notification['type'] == 'StructureFuelAlert' or notification['type'] == 'StructureServicesOffline':
+            ping = ':fuelpump:'
 
         return '%s `[%s]` %s' % (ping, timestamp, text)
 
