@@ -14,6 +14,9 @@ class Printer(object):
         text = self.get_notification_text(notification)
         timestamp = self.timestamp_to_date(notification['timestamp'])
         ping = ':scream:'
+        
+        if notification['type'] == 'StructureUnderAttack':
+            ping += ' @everyone'
 
         return '%s `[%s]` %s' % (ping, timestamp, text)
 
