@@ -36,12 +36,21 @@ eve_apis = {
     'logistics-team': {
         'notifications': {
             'whitelist': [
+                'AllWarDeclaredMsg',
+                'DeclareWar',
+                'AllWarInvalidatedMsg',
+                'AllyJoinedWarAggressorMsg',
+                'CorpWarDeclaredMsg',
+                'OwnershipTransferred',
+                'MoonminingExtractionStarted',
+                'MoonminingExtractionCancelled',
+                'MoonminingExtractionFinished',
                 'SovStructureDestroyed',
                 'SovStructureReinforced',
                 'StructureUnderAttack',
                 'OwnershipTransferred',
                 'StructureOnline',
-                'StructureFuelAlert',
+                # 'StructureFuelAlert',
                 'StructureAnchoring',
                 'StructureServicesOffline',
                 'StructureLostShields',

@@ -13,12 +13,7 @@ class Printer(object):
     def transform(self, notification):
         text = self.get_notification_text(notification)
         timestamp = self.timestamp_to_date(notification['timestamp'])
-        ping = ':gasp:'
-
-        if notification['type'] == 'StructureUnderAttack':
-            ping = ':scream: @whoeverthefuckisleadership '
-        elif notification['type'] == 'StructureFuelAlert' or notification['type'] == 'StructureServicesOffline':
-            ping = ':fuelpump: @whoeverthefuckisleadership '
+        ping = '<@&789153309827137546>'  # discord user role that should be moved to var from .env      
 
         return '%s `[%s]` %s' % (ping, timestamp, text)
 
