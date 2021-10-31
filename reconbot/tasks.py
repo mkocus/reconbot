@@ -32,7 +32,7 @@ def esi_notification_task(notification_options, api_queue, printer, notifier):
         notify_exception("esi_notification_task", e)
 
 def notify_exception(location, exception):
-    print('[%s] Exception in %s' % (datetime.datetime.now(), location))
+    print('[%s] Exception in %s' % (datetime.now(), location))
     print('-' * 60)
     traceback.print_exc(file=sys.stdout)
     print(exception)
