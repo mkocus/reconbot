@@ -27,8 +27,8 @@ Because the above tutorial uses API v1 we need to use API v2 to have longer refr
 - Authorization: Oauth 2.0
 - Auth URL: https://login.eveonline.com/v2/oauth/authorize
 - Access Token URL: https://login.eveonline.com/v2/oauth/token
-- Client ID: <from previous step>
-- Client Secret: <from previous step>
+- Client ID: <app client id>
+- Client Secret: <app secret>
 - Scope: esi-universe.read_structures.v1 esi-characters.read_notifications.v1
 - State: <anything, cannot be empty>
 
