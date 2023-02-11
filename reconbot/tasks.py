@@ -36,4 +36,5 @@ def notify_exception(location, exception):
     print('-' * 60)
     traceback.print_exc(file=sys.stdout)
     print(exception)
+    print(exception.response.text)
     print('-' * 60)

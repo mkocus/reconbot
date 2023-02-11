@@ -18,7 +18,20 @@ When registering your EVE Application, please pick `Authentication & API Access`
 - `esi-universe.read_structures.v1` - necessary to fetch names of any linked structures;
 - `esi-characters.read_notifications.v1` - necessary to fetch character level notifications.
 
-Reconbot does not provide a way to authenticate an account to an application, so you will need to do so via some other means. First two sections of Fuzzysteve's guide on [Using ESI with Google Sheets](https://www.fuzzwork.co.uk/2017/03/14/using-esi-google-sheets/) explain how to do that via [Postman](https://www.getpostman.com/).
+Reconbot does not provide a way to authenticate an account to an application, so you will need to do so via some other means. First two sections of Fuzzysteve's guide on [Using ESI with Google Sheets](https://www.fuzzwork.co.uk/2017/03/14/using-esi-google-sheets/) explain how to do that via [Postman](https://www.getpostman.com/). 
+
+### Settings for Postman
+
+Because the above tutorial uses API v1 we need to use API v2 to have longer refresh tokens.
+
+- Authorization: Oauth 2.0
+- Auth URL: https://login.eveonline.com/v2/oauth/authorize
+- Access Token URL: https://login.eveonline.com/v2/oauth/token
+- Client ID: <from previous step>
+- Client Secret: <from previous step>
+- Scope: esi-universe.read_structures.v1 esi-characters.read_notifications.v1
+- State: <anything, cannot be empty>
+
 
 When registering the application take note of the `Client ID` and `Secret Key`, as they are necessary for Reconbot to establish communication with ESI API.
 
@@ -49,13 +62,13 @@ Use it with `DiscordNotifier` as seen in `run.py` example.
 
 ## 3. Reconbot setup
 
+This one uses docker-compose, over raw python execution.
+
 1. Clone this repository
-2. Create a virtualenv environment: `virtualenv -p python3 venv`
-3. Activate the virtualenv environment: `source venv/bin/activate`. This will isolate reconbot's dependencies from the rest of your system's dependencies.
-4. Install Python depdendencies: `pip install -r requirements.txt`
-5. Modify `run.py` with your EVE API keys, key groups and Slack/Discord accounts/channels.
-  `whitelist` should contain notification types you're interested in (or `None` to allow all supported types), and `characters` should contain entries for API keys of individual characters.
-6. Execute `python run.py` and wait for notifications to arrive! After the character gets a notification in-game, `reconbot` may take up to 10 minutes to detect the notification.
+2. Copy `.env.example` to `.env` and modify it using your settings. Do the same with `characters.yaml.example` -> `characters.yaml`. Take character ID from zkillboard, use refresh token from the Postman.
+  `whitelist` should contain notification types you're interested in (or `None` to allow all supported types).
+3. Execute `docker-compose up -d --force-recreate --build` and wait for notifications to arrive! After the character gets a notification in-game, `reconbot` may take up to 10 minutes to detect the notification.
+4. If you receive no notification (but you believe you should) check `docker container ls` and use that id for `docker logs <id>`. This usually means that the refresh token is invalid, or ESI API is down.
 
 # Other notes
 
@@ -76,6 +89,8 @@ As of writing this tool there is little documentation about the types of notific
 - SovStructureReinforced
 - StructureUnderAttack
 - OwnershipTransferred
+- OrbitalReinforced
+- OrbitalAttacked
 - StructureOnline
 - StructureDestroyed
 - StructureFuelAlert
