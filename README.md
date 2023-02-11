@@ -22,15 +22,15 @@ Reconbot does not provide a way to authenticate an account to an application, so
 
 ### Settings for Postman
 
-Because the above tutorial uses API v1 we need to use API v2 to have longer refresh tokens.
+Because the above tutorial uses API v1 we need to use API v2 to have longer refresh tokens. `<>` means that you should insert something there.
 
 - Authorization: Oauth 2.0
-- Auth URL: https://login.eveonline.com/v2/oauth/authorize
-- Access Token URL: https://login.eveonline.com/v2/oauth/token
-- Client ID: <app client id>
-- Client Secret: <app secret>
-- Scope: esi-universe.read_structures.v1 esi-characters.read_notifications.v1
-- State: <anything, cannot be empty>
+- Auth URL: `https://login.eveonline.com/v2/oauth/authorize`
+- Access Token URL: `https://login.eveonline.com/v2/oauth/token`
+- Client ID: `<app client id>`
+- Client Secret: `<app secret>`
+- Scope: `esi-universe.read_structures.v1 esi-characters.read_notifications.v1`
+- State: `<anything, cannot be empty>`
 
 
 When registering the application take note of the `Client ID` and `Secret Key`, as they are necessary for Reconbot to establish communication with ESI API.
