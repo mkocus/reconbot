@@ -44,30 +44,44 @@ notifications = {
         'AllyJoinedWarAggressorMsg',
         'CorpWarDeclaredMsg',
         'OwnershipTransferred',
+
         'MoonminingExtractionStarted',
         'MoonminingExtractionCancelled',
         'MoonminingExtractionFinished',
-        'SovStructureDestroyed',
-        'SovStructureReinforced',
-        'StructureUnderAttack',
+        'MoonminingLaserFired',
+        'MoonminingAutomaticFracture',
+
         'OrbitalReinforced',
         'OrbitalAttacked',
-        'OwnershipTransferred',
+
+        'StructureUnderAttack',
         'StructureOnline',
         'StructureFuelAlert',
         'StructureAnchoring',
+        'StructureUnanchoring',
         'StructureServicesOffline',
         'StructureLostShields',
         'StructureLostArmor',
+        'StructureWentHighPower',
+        'StructureWentLowPower',
+
         'TowerAlertMsg',
+        'TowerResourceAlertMsg',
+
+        'StationConquerMsg',
         'StationServiceEnabled',
         'StationServiceDisabled',
+
         'SovAllClaimAquiredMsg',
         'SovStationEnteredFreeport',
         'SovAllClaimLostMsg',
         'SovStructureSelfDestructRequested',
         'SovStructureSelfDestructFinished',
-        'StationConquerMsg',
+        'SovStructureDestroyed',
+        'SovStructureReinforced',
+
+        'CorpTaxChangeMsg',
+        'CorpAppNewMsg'
     ]
 }
 
