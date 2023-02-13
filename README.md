@@ -7,7 +7,7 @@ Notifications like SOV changes, SOV/POS/POCO/Citadel attacks.
 
 # Setup
 
-Reconbot was intended to be used as a base for further customizations, or integration with other systems, but it can be run via `run.py` as well. Check it out for an example.
+Reconbot was intended to be used as a base for further customizations, or integration with other systems, but it can be run via `run.py` as well. Check it out for an example. In this version it can also be run in Docker container, using simple `docker-compose` command.
 
 ## 1. EVE Developer Application
 
@@ -20,11 +20,13 @@ When registering your EVE Application, please pick `Authentication & API Access`
 
 Reconbot does not provide a way to authenticate an account to an application, so you will need to do so via some other means. First two sections of Fuzzysteve's guide on [Using ESI with Google Sheets](https://www.fuzzwork.co.uk/2017/03/14/using-esi-google-sheets/) explain how to do that via [Postman](https://www.getpostman.com/). 
 
-### Settings for Postman
+When registering the application take note of the `Client ID` and `Secret Key`, as they are necessary for Reconbot to establish communication with ESI API.
 
-Because the above tutorial uses API v1 we need to use API v2 to have longer refresh tokens. `<>` means that you should insert something there.
+### Postman settings
 
-- Authorization: Oauth 2.0
+Reconbot uses ESI 2.0 API, but the Fuzzysteve's guide uses API v1. Please use below settings for Postman. `<>` means that you should insert something there.
+
+- Authorization: `Oauth 2.0`
 - Auth URL: `https://login.eveonline.com/v2/oauth/authorize`
 - Access Token URL: `https://login.eveonline.com/v2/oauth/token`
 - Client ID: `<app client id>`
@@ -32,8 +34,7 @@ Because the above tutorial uses API v1 we need to use API v2 to have longer refr
 - Scope: `esi-universe.read_structures.v1 esi-characters.read_notifications.v1`
 - State: `<anything, cannot be empty>`
 
-
-When registering the application take note of the `Client ID` and `Secret Key`, as they are necessary for Reconbot to establish communication with ESI API.
+Please write `refresh token` from the results, it will be used later.
 
 ## 2. Slack or Discord chat tools
 
@@ -50,6 +51,7 @@ You should now have a URL like this:
 ```
 https://discordapp.com/api/webhooks/496014874437332490/5783au24jzyEFIaWnfTvJn0gFzh5REEEE3ee3e3eNKeFee3We2cIe_6e7e36ugUj5zEm
 ```
+
 Use it with `DiscordWebhookNotifier` as seen in `run.py` example.
 
 __If you wish to use a Discord bot user:__ (not recommended)
@@ -65,10 +67,27 @@ Use it with `DiscordNotifier` as seen in `run.py` example.
 This one uses docker-compose, over raw python execution.
 
 1. Clone this repository
-2. Copy `.env.example` to `.env` and modify it using your settings. Do the same with `characters.yaml.example` -> `characters.yaml`. Take character ID from zkillboard, use refresh token from the Postman.
+2. Copy `.env.example` to `.env` and modify it using your settings. More on that below. Do the same with `characters.yaml.example` -> `characters.yaml`. Take character ID from zkillboard, use refresh token from the Postman.
   `whitelist` should contain notification types you're interested in (or `None` to allow all supported types).
 3. Execute `docker-compose up -d --force-recreate --build` and wait for notifications to arrive! After the character gets a notification in-game, `reconbot` may take up to 10 minutes to detect the notification.
 4. If you receive no notification (but you believe you should) check `docker container ls` and use that id for `docker logs <id>`. This usually means that the refresh token is invalid, or ESI API is down.
+
+`.env`:
+
+- `WEBHOOK_URL` - discord webhook url from 2. step
+- `SSO_APP_CLIENT_ID` - eve app client id from 1. step
+- `SSO_APP_SECRET_KEY` - eve app secret from 1. step
+- `CONTAINER_NAME` - name of the container which will be used for docker, does not really matter, but must not be empty
+- `MAX_NOTIFICATION_AGE_IN_SECONDS` - the bot will get in game notifications not older that this
+- `DEFAULT_PING_ROLE` - pings will use this handle for default-level pings. Use `@everyone` or `@here` for pinging everyone in channel
+- `ESCALATED_PING_ROLE` - same as above, but for escalated-level pings.
+- `ADDITIONAL_INFO_TEXT` - this will be added to the notification
+
+`characters.yaml`:
+
+- `character_name` - self explanatory
+- `character_id` - use zkillboard or similar service to grab id of your character
+- `refresh_token` - token from postman from 1. step
 
 # Other notes
 
