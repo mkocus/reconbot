@@ -19,7 +19,7 @@ class Printer(object):
         ping = os.getenv("DEFAULT_PING_ROLE")
         info = ''
 
-        if notification['type'] in ['StructureUnderAttack', 'StructureLostShields', 'StructureWentLowPower', 'TowerAlertMsg', 'OrbitalAttacked', 'OrbitalReinforced', 'StructureLostArmor']
+        if notification['type'] in ['StructureUnderAttack', 'StructureLostShields', 'StructureWentLowPower', 'TowerAlertMsg', 'OrbitalAttacked', 'OrbitalReinforced', 'StructureLostArmor']:
             ping = os.getenv("ESCALATED_PING_ROLE")
             info = os.getenv("ADDITIONAL_INFO_TEXT")
 
