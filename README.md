@@ -80,7 +80,7 @@ This one uses docker-compose, over raw python execution.
 - `CONTAINER_NAME` - name of the container which will be used for docker, does not really matter, but must not be empty
 - `MAX_NOTIFICATION_AGE_IN_SECONDS` - the bot will get in game notifications not older that this
 - `DEFAULT_PING_ROLE` - pings will use this handle for default-level pings. Can be empty string, then it will just write without pinging anyone.
-- `ESCALATED_PING_ROLE` - same as above, but for escalated-level pings. Currently escalted level pings are: `OrbitalReinforced`, `OrbitalAttacked`, `StructureUnderAttack`, `StructureLostShields`, `StructureLostArmor`, `StructureWentLowPower`, `TowerAlertMsg`. Use `@everyone` or `@here` for pinging everyone in channel.
+- `ESCALATED_PING_ROLE` - same as above, but for escalated-level pings. Currently escalted level pings are: `OrbitalReinforced`, `OrbitalAttacked`, `StructureUnderAttack`, `StructureLostShields`, `StructureLostArmor`, `StructureWentLowPower`, `TowerAlertMsg`, `WarInvalid`, `WarDeclared`. Use `@everyone` or `@here` for pinging everyone in channel.
 - `ADDITIONAL_INFO` - any text that, will be added to escalated level pings.
 
 `characters.yaml`:

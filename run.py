@@ -44,6 +44,8 @@ notifications = {
         'AllyJoinedWarAggressorMsg',
         'CorpWarDeclaredMsg',
         'OwnershipTransferred',
+        'WarDeclared',
+        'WarInvalid',
 
         'MoonminingExtractionStarted',
         'MoonminingExtractionCancelled',

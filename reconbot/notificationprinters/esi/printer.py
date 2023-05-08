@@ -19,7 +19,7 @@ class Printer(object):
         ping = os.getenv("DEFAULT_PING_ROLE")
         info = ''
 
-        if notification['type'] in ['StructureUnderAttack', 'StructureLostShields', 'StructureWentLowPower', 'TowerAlertMsg', 'OrbitalAttacked', 'OrbitalReinforced', 'StructureLostArmor']:
+        if notification['type'] in ['StructureUnderAttack', 'StructureLostShields', 'StructureWentLowPower', 'TowerAlertMsg', 'OrbitalAttacked', 'OrbitalReinforced', 'StructureLostArmor', 'WarDeclared', 'WarInvalid']:
             ping = os.getenv("ESCALATED_PING_ROLE")
             info = os.getenv("ADDITIONAL_INFO_TEXT")
 
@@ -30,6 +30,8 @@ class Printer(object):
         types = {
             'AllWarDeclaredMsg': self.corporation_war_declared,
             'DeclareWar': self.declare_war,
+            'WarDeclared': self.war_declared,
+            'WarInvalid': self.war_invalid,
             'AllWarInvalidatedMsg': self.corporation_war_invalidated,
             'AllyJoinedWarAggressorMsg': self.aggressor_ally_joined_war,
             'CorpWarDeclaredMsg': self.corporation_war_declared,
@@ -104,6 +106,11 @@ class Printer(object):
     def declare_war(self):
         return '{0:get_character(charID)} from {0:get_corporation_or_alliance(entityID)} has declared war to {0:get_corporation_or_alliance(defenderID)}'
 
+    def war_declared(self):
+        return '{0:get_corporation_or_alliance(declaredByID)} has declared war to {0:get_corporation_or_alliance(againstID)}. War will start in 24h'
+
+    def war_invalid(self):
+        return 'War has been invalidated to {0:get_corporation_or_alliance(againstID)} by {0:get_corporation_or_alliance(declaredByID)}'
 
     def corporation_war_invalidated(self):
         return 'War has been invalidated to {0:get_corporation_or_alliance(againstID)} by {0:get_corporation_or_alliance(declaredByID)}'
