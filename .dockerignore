@@ -1,6 +1,13 @@
+.git
+.github
+.env
+.env.*
+characters.yaml
 venv
-datadump/*
+tests
+**/__pycache__
+*.pyc
+datadump
 coverage.xml
 unit.xml
 .coverage
-.env.example

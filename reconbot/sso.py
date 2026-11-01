@@ -2,6 +2,8 @@ import requests
 import base64
 import time
 
+REQUEST_TIMEOUT = 30
+
 class SSO:
 
     def __init__(self, client_id, secret_key, refresh_token, character_id):
@@ -29,9 +31,9 @@ class SSO:
             'authorization': 'Basic %s' % base64.b64encode(str.encode('%s:%s' % (self.client_id, self.secret_key))).decode('utf-8')
         }
 
-        r = requests.post('%s/v2/oauth/token' % self.login_server, data=payload, headers=headers)
+        r = requests.post('%s/v2/oauth/token' % self.login_server, data=payload, headers=headers, timeout=REQUEST_TIMEOUT)
         if r.status_code == 200:
-            response = r.json()            
+            response = r.json()
             self.access_token = response['access_token']
             self.access_token_expiry = self.set_token_expiry(response['expires_in'])
             return self.access_token

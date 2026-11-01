@@ -20,9 +20,7 @@ sso_app_client_id           = os.getenv("SSO_APP_CLIENT_ID")
 sso_app_secret_key          = os.getenv("SSO_APP_SECRET_KEY")
 
 with open('./characters.yaml') as file:
-    # The FullLoader parameter handles the conversion from YAML
-    # scalar values to Python the dictionary format
-    characters_list = yaml.load(file)
+    characters_list = yaml.safe_load(file)
 
 discord = {
     'webhook': {

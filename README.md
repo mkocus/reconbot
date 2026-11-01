@@ -1,4 +1,4 @@
-Reconbot for Eve Online [![CircleCI](https://circleci.com/gh/flakas/reconbot.svg?style=svg)](https://circleci.com/gh/flakas/reconbot)
+Reconbot for Eve Online [![tests](https://github.com/mkocus/reconbot/actions/workflows/tests.yml/badge.svg)](https://github.com/mkocus/reconbot/actions/workflows/tests.yml)
 =======================
 
 Reconbot is a notification relay bot for an MMO game [Eve Online](http://secure.eveonline.com/signup/?invc=905e73a0-eb57-49ab-8fe5-9759c2ba5e99&action=buddy).
@@ -7,7 +7,7 @@ Notifications like SOV changes, SOV/POS/POCO/Citadel attacks.
 
 # Setup
 
-Reconbot was intended to be used as a base for further customizations, or integration with other systems, but it can be run via `run.py` as well. Check it out for an example. In this version it can also be run in Docker container, using simple `docker-compose` command.
+Reconbot was intended to be used as a base for further customizations, or integration with other systems, but it can be run via `run.py` as well. Check it out for an example. In this version it can also be run in Docker container, using simple `docker compose` command. Requires Python 3.10+ (the Docker image uses Python 3.13).
 
 ## 1. EVE Developer Application
 
@@ -64,12 +64,12 @@ Use it with `DiscordNotifier` as seen in `run.py` example.
 
 ## 3. Reconbot setup
 
-This one uses docker-compose, over raw python execution.
+This one uses Docker Compose v2, over raw python execution. `characters.yaml` is mounted into the container at runtime (it is not baked into the image); keep it readable by UID 1000, e.g. `chmod 600 characters.yaml` as that user.
 
 1. Clone this repository
 2. Copy `.env.example` to `.env` and modify it using your settings. More on that below. Do the same with `characters.yaml.example` -> `characters.yaml`. Take character ID from zkillboard, use refresh token from the Postman.
   File `run.py` contain `whitelist`, which indicates which notification types you're interested in (or `None` to allow all supported types).
-3. Execute `docker-compose up -d --force-recreate --build` and wait for notifications to arrive! After the character gets a notification in-game, `reconbot` may take up to 10 minutes to detect the notification.
+3. Execute `docker compose up -d --force-recreate --build` and wait for notifications to arrive! After the character gets a notification in-game, `reconbot` may take up to 10 minutes to detect the notification.
 4. If you receive no notification (but you believe you should) check `docker container ls` and use that id for `docker logs <id>`. This usually means that the refresh token is invalid, or ESI API is down.
 
 `.env`:
@@ -157,3 +157,11 @@ As of writing this tool there is little documentation about the types of notific
 - AllianceCapitalChanged
 
 Do you have sample contents of currently unsupported notification types? Consider sharing them by creating an issue, or submit a Pull Request. Any help would be appreciated!
+
+Development
+-----------
+
+```
+pip install -r requirements-dev.txt
+python -m pytest
+```

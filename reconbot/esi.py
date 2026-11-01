@@ -1,8 +1,9 @@
 import requests
-import base64
 import functools
 import datetime
 import time
+
+REQUEST_TIMEOUT = 30
 
 class ESI:
     def __init__(self, sso):
@@ -40,8 +41,8 @@ class ESI:
         if not max_age:
             return True
 
-        now = datetime.datetime.utcnow()
-        event_time = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ")
+        now = datetime.datetime.now(datetime.timezone.utc)
+        event_time = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=datetime.timezone.utc)
         difference = now - event_time
         return difference.total_seconds() < max_age
 
@@ -80,24 +81,30 @@ class ESI:
             '/latest/killmails/%d/%s/' % (killmail_id, killmail_hash)
         )
 
-    def esi_get(self, endpoint, query={}):
+    def esi_get(self, endpoint, query=None):
         max_attempts = 3
         failed_request_delay = 10
 
-        query['token'] = self.sso.get_access_token()
-        query['datasource'] = 'tranquility'
+        params = dict(query or {})
+        params['datasource'] = 'tranquility'
+        # Send the token as a header rather than a query parameter, so it
+        # doesn't end up in URLs, proxies or exception messages.
+        headers = {'Authorization': 'Bearer %s' % self.sso.get_access_token()}
 
         url = '%s%s' % (self.esi_server, endpoint)
 
         for attempt in range(1, max_attempts + 1):
-            r = requests.get(url, params=query)
+            r = requests.get(url, params=params, headers=headers, timeout=REQUEST_TIMEOUT)
 
             if r.status_code == 200:
                 response = r.json()
                 return response
             elif r.status_code >= 500 and r.status_code < 600 and attempt < max_attempts:
-                json = r.json()
-                if r.status_code == 500 and 'response' in json:
+                try:
+                    json = r.json()
+                except ValueError:
+                    json = {}
+                if r.status_code == 500 and isinstance(json, dict) and 'response' in json:
                     return json['response']
                 print('Delaying as server recovery attempt')
                 time.sleep(failed_request_delay)

@@ -1,5 +1,6 @@
-import json
 import requests
+
+REQUEST_TIMEOUT = 30
 
 class DiscordWebhookNotifier:
     def __init__(self, url):
@@ -12,4 +13,4 @@ class DiscordWebhookNotifier:
         payload = {
             'content': message
         }
-        return requests.post(self.url, json=payload)
+        return requests.post(self.url, json=payload, timeout=REQUEST_TIMEOUT)
