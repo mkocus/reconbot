@@ -1,4 +1,4 @@
-import sys, traceback, datetime, os
+import sys, traceback, os
 
 from reconbot.notificationprinters.esi.discord import Discord as ESIDiscord
 from reconbot.esi import ESI
@@ -8,7 +8,7 @@ from datetime import datetime
 load_dotenv()
 
 def esi_notification_task(notification_options, api_queue, printer, notifier):
-    MAX_NOTIFICATION_AGE_IN_SECONDS = int(os.getenv("MAX_NOTIFICATION_AGE_IN_SECONDS"))
+    MAX_NOTIFICATION_AGE_IN_SECONDS = int(os.getenv("MAX_NOTIFICATION_AGE_IN_SECONDS", "3600"))
     
     try:
         sso = api_queue.get()
@@ -38,5 +38,7 @@ def notify_exception(location, exception):
     print('-' * 60)
     traceback.print_exc(file=sys.stdout)
     print(exception)
-    print(exception.response.text)
+    response = getattr(exception, 'response', None)
+    if response is not None:
+        print(response.text)
     print('-' * 60)

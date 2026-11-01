@@ -6,6 +6,33 @@ import os
 from reconbot.notificationprinters.esi.formatter import Formatter
 from dotenv import load_dotenv
 
+
+class NotificationLoader(yaml.SafeLoader):
+    """Safe YAML loader for ESI notification bodies.
+
+    Notification texts embed values controlled by other players (structure,
+    corporation and character names), so they must never be parsed with a
+    loader that can construct arbitrary Python objects. Unknown tags are
+    loaded as plain data instead of raising, so an unexpected tag from CCP
+    can't break notifications either.
+    """
+
+
+def _construct_unknown_tag(loader, tag_suffix, node):
+    if isinstance(node, yaml.ScalarNode):
+        return loader.construct_scalar(node)
+    if isinstance(node, yaml.SequenceNode):
+        return loader.construct_sequence(node, deep=True)
+    return loader.construct_mapping(node, deep=True)
+
+
+NotificationLoader.add_multi_constructor('', _construct_unknown_tag)
+
+
+def parse_notification_text(text):
+    return yaml.load(text, Loader=NotificationLoader) or {}
+
+
 class Printer(object):
     __metaclass__ = abc.ABCMeta
     load_dotenv()
@@ -91,7 +118,7 @@ class Printer(object):
         }
 
         if notification['type'] in types:
-            text = yaml.load(notification['text'])
+            text = parse_notification_text(notification['text'])
             text['notification_timestamp'] = notification['timestamp']
             template = types[notification['type']]()
 
@@ -337,7 +364,7 @@ class Printer(object):
         """
 
         seconds = microseconds/10000000 - 11644473600
-        return datetime.datetime.utcfromtimestamp(seconds).strftime('%Y-%m-%d %H:%M:%S')
+        return datetime.datetime.fromtimestamp(seconds, tz=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
 
     def eve_duration_to_date(self, timestamp, microseconds):
         """
