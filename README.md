@@ -2,8 +2,39 @@ Reconbot for Eve Online [![tests](https://github.com/mkocus/reconbot/actions/wor
 =======================
 
 Reconbot is a notification relay bot for an MMO game [Eve Online](http://secure.eveonline.com/signup/?invc=905e73a0-eb57-49ab-8fe5-9759c2ba5e99&action=buddy).
-It fetches character notifications from the EVE API, filters irrelevant ones out and sends relevant ones to set Slack or Discord channels.
+It fetches character notifications from the EVE API, filters irrelevant ones out and sends relevant ones to a Discord channel via a webhook.
 Notifications like SOV changes, SOV/POS/POCO/Citadel attacks.
+
+# About this fork
+
+This is a maintained fork of [flakas/reconbot](https://github.com/flakas/reconbot), which is no longer developed. Version 2.0 (November 2026) brings it up to date:
+
+**Security**
+- ESI notification bodies are parsed with a safe YAML loader. The old code used `yaml.load()` from PyYAML 4.2b1, which builds arbitrary Python objects. Notification texts contain values controlled by other players (structure, corporation and character names), so a crafted YAML tag could run code on the host. Unknown tags are now loaded as plain data.
+- `characters.yaml` is loaded with `yaml.safe_load()`.
+- The ESI access token is sent in the `Authorization` header instead of the URL.
+- All HTTP requests have timeouts, so a hanging ESI, SSO or Discord call can no longer stall the bot.
+
+**Runtime**
+- Python 3.6 on Debian 10 (both end-of-life) → Python 3.13 on Debian 13 (`python:3.13-slim-trixie`).
+- Current libraries: PyYAML 6.0.3, requests 2.34.2, schedule 1.2.2, python-dotenv 1.2.4. The unused `discord.py` dependency was removed.
+- Deprecated APIs (`datetime.utcnow()`, `utcfromtimestamp()`, `distutils`) replaced.
+- The error handler no longer crashes on exceptions that carry no HTTP response.
+
+**Container**
+- Runs as an unprivileged user (UID 1000) with a read-only root filesystem, all Linux capabilities dropped and `no-new-privileges`.
+- Secrets stay out of the image: `.env` is passed as environment variables and `characters.yaml` is mounted read-only at runtime.
+- Docker Compose v2 (`docker compose`).
+
+**Development**
+- CircleCI (Python 3.5) replaced with GitHub Actions running `pytest` on Python 3.13.
+- Tests for notification parsing, including YAML injection attempts.
+
+## Upgrading from the old version
+
+1. Pull the new code. Your existing `.env` and `characters.yaml` keep working.
+2. Make `characters.yaml` readable by UID 1000, which the container runs as: `sudo chown 1000:1000 characters.yaml && sudo chmod 600 characters.yaml`.
+3. Rebuild with Compose v2: `docker compose up -d --build`. If you still have the old `docker-compose` v1 (1.29), it may fail with `KeyError: 'ContainerConfig'` when recreating containers; install the Compose v2 plugin instead.
 
 # Setup
 
@@ -36,31 +67,15 @@ Reconbot uses ESI 2.0 API, but the Fuzzysteve's guide uses API v1. Please use be
 
 Please write `refresh token` from the results, it will be used later.
 
-## 2. Slack or Discord chat tools
+## 2. Discord webhook
 
-### Slack
-
-To add a Slack integration, check out [this Slack documentation page on Bot Users](https://api.slack.com/bot-users) (or [create bot user for your workspace](https://my.slack.com/services/new/bot)). Take note of the API token.
-
-### Discord
-
-__If you wish to use a Discord webhook:__
-
-Webhooks are the easiest way to integrate Reconbot with Discord. Simply follow [this Discord guide](https://support.discordapp.com/hc/en-us/articles/228383668-Intro-to-Webhooks) to create a webhook for your channel.
+Reconbot posts to Discord through a webhook. Simply follow [this Discord guide](https://support.discordapp.com/hc/en-us/articles/228383668-Intro-to-Webhooks) to create a webhook for your channel.
 You should now have a URL like this:
 ```
 https://discordapp.com/api/webhooks/496014874437332490/5783au24jzyEFIaWnfTvJn0gFzh5REEEE3ee3e3eNKeFee3We2cIe_6e7e36ugUj5zEm
 ```
 
-Use it with `DiscordWebhookNotifier` as seen in `run.py` example.
-
-__If you wish to use a Discord bot user:__ (not recommended)
-
-To add a Discord integration, check out [this Discord documentation page on Bot accounts](https://discordapp.com/developers/docs/topics/oauth2#bots).
-You will need to [create an application](https://discordapp.com/developers/applications/me#top) and add it to your discord server.
-See [this guide](https://github.com/Chikachi/DiscordIntegration/wiki/How-to-get-a-token-and-channel-ID-for-Discord) for more visual step-by-step instructions.
-You will need a `Token` for your Bot User, and `Channel ID` where to post messages in.
-Use it with `DiscordNotifier` as seen in `run.py` example.
+It is used by `DiscordWebhookNotifier`, see `run.py`.
 
 ## 3. Reconbot setup
 
@@ -81,7 +96,7 @@ This one uses Docker Compose v2, over raw python execution. `characters.yaml` is
 - `MAX_NOTIFICATION_AGE_IN_SECONDS` - the bot will get in game notifications not older that this
 - `DEFAULT_PING_ROLE` - pings will use this handle for default-level pings. Can be empty string, then it will just write without pinging anyone.
 - `ESCALATED_PING_ROLE` - same as above, but for escalated-level pings. Currently escalted level pings are: `OrbitalReinforced`, `OrbitalAttacked`, `StructureUnderAttack`, `StructureLostShields`, `StructureLostArmor`, `StructureWentLowPower`, `TowerAlertMsg`, `WarInvalid`, `WarDeclared`. Use `@everyone` or `@here` for pinging everyone in channel.
-- `ADDITIONAL_INFO` - any text that, will be added to escalated level pings.
+- `ADDITIONAL_INFO_TEXT` - any text that will be added to escalated level pings.
 
 `characters.yaml`:
 
